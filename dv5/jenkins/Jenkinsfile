@@ -1,0 +1,22 @@
+pipeline {
+    agent {
+      dockerfile {
+        dir 'dv5/jenkins'
+        filename 'Dockerfile.jenkins'
+        args  '--group-add=docker -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/jenkins/.m2:/home/jenkins/.m2 -e JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8'
+      }
+    }
+    stages {
+        stage('Test Docker Socket etc') {
+            steps {
+                echo 'Testing Docker Socket'
+                sh 'type curl'
+                sh 'type jq'
+                sh 'whoami'
+                sh 'groups'
+                sh 'ls -l /var/run/docker.sock'
+                sh 'curl --silent -XGET --unix-socket /var/run/docker.sock http://localhost/info | jq'
+            }
+        }
+    }
+}
